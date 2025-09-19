@@ -2,6 +2,7 @@ mod adder;
 mod boolean_evaluation;
 mod gray;
 mod multiplier;
+mod negation_normal_form;
 mod truth_table;
 
 fn main() {
@@ -23,4 +24,15 @@ fn main() {
     println!("{}", boolean_evaluation::eval_formula("101111111||="));
 
     truth_table::print_truth_table("AB&C|");
+
+    println!("{}", negation_normal_form::negation_normal_form("AB&!"));
+    // A!B!|
+    println!("{}", negation_normal_form::negation_normal_form("AB|!"));
+    // A!B!&
+    println!("{}", negation_normal_form::negation_normal_form("AB>"));
+    // A!B|
+    println!("{}", negation_normal_form::negation_normal_form("AB="));
+    // AB&A!B!&|
+    println!("{}", negation_normal_form::negation_normal_form("AB|C&!"));
+    // A!B!&C!|
 }
