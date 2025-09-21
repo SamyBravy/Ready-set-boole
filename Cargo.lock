@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "bool"
+name = "ready-set-boole"
 version = "0.1.0"

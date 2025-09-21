@@ -1,4 +1,3 @@
-use crate::{boolean_evaluation::{eval_formula, ASTNode}, truth_table::print_truth_table};
 mod adder;
 mod boolean_evaluation;
 mod gray_code;
@@ -6,14 +5,14 @@ mod multiplier;
 mod negation_normal_form;
 mod truth_table;
 
-fn display_mathematical_formula(node: &ASTNode) {
+fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 	match node {
-		ASTNode::Value(v) => print!("{}", match v {
+		boolean_evaluation::ASTNode::Value(v) => print!("{}", match v {
 			'0' => '⊥',
 			'1' => '⊤',
 			_ => *v,
 		}),
-		ASTNode::Op { operator, left, right } => {
+		boolean_evaluation::ASTNode::Op { operator, left, right } => {
 			if let Some(l) = left.as_ref() {
 				print!("(");
 				display_mathematical_formula(l);
@@ -65,7 +64,7 @@ fn main() {
 		}
 		else
 		{
-			eval_formula(f);
+			boolean_evaluation::eval_formula(f);
 		}
 	}
 
@@ -80,7 +79,7 @@ fn main() {
 		}
 		else
 		{
-			print_truth_table(expr);
+			truth_table::print_truth_table(expr);
 		}
 	}
 
