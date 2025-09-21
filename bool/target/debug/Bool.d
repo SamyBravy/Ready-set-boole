@@ -1,1 +1,0 @@
-/home/lmicheli/Documents/Rust/Matrix/bool/target/debug/Bool: /home/lmicheli/Documents/Rust/Matrix/bool/src/adder.rs /home/lmicheli/Documents/Rust/Matrix/bool/src/boolean_evaluation.rs /home/lmicheli/Documents/Rust/Matrix/bool/src/gray.rs /home/lmicheli/Documents/Rust/Matrix/bool/src/main.rs /home/lmicheli/Documents/Rust/Matrix/bool/src/multiplier.rs
