@@ -2,8 +2,9 @@ mod adder;
 mod boolean_evaluation;
 mod gray_code;
 mod multiplier;
-mod negation_normal_form;
 mod truth_table;
+mod negation_normal_form;
+mod conjunctive_normal_form;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 	match node {
@@ -84,7 +85,7 @@ fn main() {
 	}
 
 	print_section("NEGATION NORMAL FORM");
-	let nnf_exprs = ["AB&!", "AB|!", "AB>", "A!!B!!!!>", "AB=", "AB|C&!", "1011", "101111111||="];
+	let nnf_exprs = ["AB&!", "AB|!", "AB>", "A!!B!!!!>", "AB=", "AB|C&!", "AB^", "1011", "101111111||="];
 	for expr in nnf_exprs {
 		if let Some(ast) = boolean_evaluation::build_ast(expr) {
 			print!("NNF of {} {{", expr);
@@ -92,11 +93,28 @@ fn main() {
 			let nnf = negation_normal_form::negation_normal_form(expr);
 			print!("}}: {} {{", nnf);
 			display_mathematical_formula(&boolean_evaluation::build_ast(&nnf).unwrap());
-			println!(")");
+			println!("}}");
 		}
 		else
 		{
 			negation_normal_form::negation_normal_form(expr);
+		}
+	}
+
+	print_section("CONJUNCTIVE NORMAL FORM");
+	let nnf_exprs = ["AB&!", "AB|!", "AB|C&", "AB|C|D|", "AB&C&D&", "AB&!C!|", "AB|!C!&", "1011", "101111111||="];
+	for expr in nnf_exprs {
+		if let Some(ast) = boolean_evaluation::build_ast(expr) {
+			print!("CNF of {} {{", expr);
+			display_mathematical_formula(&ast);
+			let nnf = conjunctive_normal_form::conjunctive_normal_form(expr);
+			print!("}}: {} {{", nnf);
+			display_mathematical_formula(&boolean_evaluation::build_ast(&nnf).unwrap());
+			println!("}}");
+		}
+		else
+		{
+			conjunctive_normal_form::conjunctive_normal_form(expr);
 		}
 	}
 }
