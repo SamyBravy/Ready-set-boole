@@ -5,6 +5,7 @@ mod multiplier;
 mod truth_table;
 mod negation_normal_form;
 mod conjunctive_normal_form;
+mod sat;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 	match node {
@@ -102,8 +103,8 @@ fn main() {
 	}
 
 	print_section("CONJUNCTIVE NORMAL FORM");
-	let nnf_exprs = ["AB&!", "AB|!", "AB|C&", "AB|C|D|", "AB&C&D&", "AB&!C!|", "AB|!C!&", "1011", "101111111||="];
-	for expr in nnf_exprs {
+	let cnf_exprs = ["AB&!", "AB|!", "AB|C&", "AB|C|D|", "AB&C&D&", "AB&!C!|", "AB|!C!&", "AB|C&DEF|&|", "1011", "101111111||="];
+	for expr in cnf_exprs {
 		if let Some(ast) = boolean_evaluation::build_ast(expr) {
 			print!("CNF of {} {{", expr);
 			display_mathematical_formula(&ast);
@@ -115,6 +116,21 @@ fn main() {
 		else
 		{
 			conjunctive_normal_form::conjunctive_normal_form(expr);
+		}
+	}
+
+	print_section("SAT");
+	let sat_exprs = ["AB|", "AB&", "AA!&", "AA^", "1011", "101111111||="];
+	for expr in sat_exprs {
+		if let Some(ast) = boolean_evaluation::build_ast(expr) {
+			print!("SAT of {} {{", expr);
+			display_mathematical_formula(&ast);
+			let sat = sat::sat(expr);
+			println!("}}: {}", sat);
+		}
+		else
+		{
+			sat::sat(expr);
 		}
 	}
 }
