@@ -9,7 +9,7 @@ mod sat;
 mod powerset;
 mod set_evaluation;
 
-fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
+fn display_mathematical_formula(node: &boolean_evaluation::ASTNode<char>) {
 	match node {
 		boolean_evaluation::ASTNode::Value(v) => print!("{}", match v {
 			'0' => '⊥',
@@ -35,9 +35,6 @@ fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 			display_mathematical_formula(right);
 			print!(")");
 		},
-		_ => {
-			println!("Invalid node in AST");
-		}
 	}
 }
 
@@ -150,10 +147,30 @@ fn main() {
 	}
 
 	print_section("SET EVALUATION");
-	let sets = vec![
-		vec![0, 1, 2],
-		vec![0, 3, 4],
+	let sets_vec = vec![
+		vec![
+			vec![0, 1, 2],
+			vec![0, 3, 4],
+		],
+		vec![
+			vec![0, 1, 2],
+			vec![3, 4, 5],
+		],
+		vec![
+			vec![0, 1, 2],
+		],
 	];
-	let result = set_evaluation::eval_set("AB&", sets);
-	println!("The result of the set expression AB& is: {:?}", result);
+	let formulas = ["AB&", "AB|", "A!", "1011", "101111111||="];
+	for (sets, formulas) in sets_vec.iter().zip(formulas.iter()) {
+		if let Some(ast) = boolean_evaluation::build_ast(formulas) {
+			print!("{} {{", formulas);
+			display_mathematical_formula(&ast);
+			let result = set_evaluation::eval_set(formulas, sets.clone());
+			println!("}} with sets {:?} is: {:?}", sets, result);
+		}
+		else
+		{
+			set_evaluation::eval_set(formulas, sets.clone());
+		}
+	}
 }

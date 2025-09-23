@@ -2,7 +2,7 @@ use crate::boolean_evaluation::ASTNode;
 use crate::boolean_evaluation::build_ast;
 use std::mem;
 
-pub fn tree_to_string(node: &ASTNode) -> String
+pub fn tree_to_string(node: &ASTNode<char>) -> String
 {
 	match node {
 		ASTNode::Value(v) => v.to_string(),
@@ -24,11 +24,10 @@ pub fn tree_to_string(node: &ASTNode) -> String
 
             res
         },
-		_ => { String::new() }
 	}
 }
 
-pub fn tree_to_almost_nnf(node: &mut ASTNode, modified: &mut bool)
+pub fn tree_to_almost_nnf(node: &mut ASTNode<char>, modified: &mut bool)
 {
 	match node {
 		ASTNode::Op { operator, left, right } => {

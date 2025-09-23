@@ -1,20 +1,16 @@
-use crate::set_evaluation::MySet;
-
 #[derive(Clone)]
-pub enum ASTNode {
-    Value(char),
+pub enum ASTNode<V> {
+    Value(V),
     Op {
         operator: char,
-        left: Option<Box<ASTNode>>,
-        right: Box<ASTNode>,
+        left: Option<Box<ASTNode<V>>>,
+        right: Box<ASTNode<V>>,
     },
-
-	Set(MySet),
 }
 
-pub fn build_ast(formula: &str) -> Option<ASTNode>
+pub fn build_ast(formula: &str) -> Option<ASTNode<char>>
 {
-	let mut stack: Vec<ASTNode> = Vec::new();
+	let mut stack: Vec<ASTNode<char>> = Vec::new();
 
 	for c in formula.chars()
 	{
@@ -46,7 +42,7 @@ pub fn build_ast(formula: &str) -> Option<ASTNode>
 	return Some(stack.pop().unwrap());
 }
 
-pub fn eval_node(node: &ASTNode) -> Option<bool>
+pub fn eval_node(node: &ASTNode<char>) -> Option<bool>
 {
     match node {
         ASTNode::Value(c) => match c {
@@ -72,10 +68,6 @@ pub fn eval_node(node: &ASTNode) -> Option<bool>
                 }
             }
         },
-		_ => {
-			println!("Invalid node in AST");
-			None
-		}
 	}
 }
 

@@ -4,7 +4,7 @@ use crate::negation_normal_form::tree_to_almost_nnf;
 use crate::negation_normal_form::tree_to_string;
 use std::mem;
 
-pub fn tree_to_almost_cnf(node: &mut ASTNode, modified: &mut bool)
+pub fn tree_to_almost_cnf(node: &mut ASTNode<char>, modified: &mut bool)
 {
 	match node {
 		ASTNode::Op { operator, left, right } => {

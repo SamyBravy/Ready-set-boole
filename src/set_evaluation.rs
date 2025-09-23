@@ -1,102 +1,139 @@
 use crate::boolean_evaluation::{build_ast, ASTNode};
 use crate::negation_normal_form::tree_to_almost_nnf;
 use std::ops::{BitAnd, BitOr, Not};
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
 
 #[derive(Clone)]
 pub struct MySet(Vec<i32>);
 
+static UNIVERSE: Lazy<Mutex<MySet>> = Lazy::new(|| Mutex::new(MySet(vec![])));
+
 impl BitAnd for MySet {
     type Output = Self;
-    fn bitand(self, rhs: Self) -> Self::Output {
-        let v = self.0.into_iter().filter(|x| rhs.0.contains(x)).collect();
-        MySet(v)
+
+    fn bitand(self, other: Self) -> Self::Output {
+        MySet(
+            self.0
+                .iter()
+                .filter_map(|n| if other.0.contains(n) { Some(*n) } else { None })
+                .collect::<Vec<i32>>(),
+        )
     }
 }
 
 impl BitOr for MySet {
     type Output = Self;
-    fn bitor(self, rhs: Self) -> Self::Output {
-        let mut v = self.0.clone();
-        for x in rhs.0 {
-            if !v.contains(&x) { v.push(x); }
-        }
-        MySet(v)
+
+    fn bitor(self, other: Self) -> Self::Output {
+        MySet(
+            [
+                self.0.clone(),
+                other
+                    .0
+                    .iter()
+                    .filter_map(|n| if !self.0.contains(n) { Some(*n) } else { None })
+                    .collect(),
+            ]
+            .concat(),
+        )
     }
 }
 
 impl Not for MySet {
-	type Output = Self;
-	fn not(self) -> Self::Output {
-		let mut v = vec![];
-		for x in 0..=100 { // assuming universe is 0 to 100
-			if !self.0.contains(&x) { v.push(x); }
-		}
-		MySet(v)
-	}
-}
+    type Output = Self;
 
-
-fn substitute_vecs(node: &mut ASTNode, sets: &Vec<Vec<i32>>) {
-    match node {
-        ASTNode::Value(c) => {
-            *node = ASTNode::Set(MySet(sets[(*c as u8 - b'A') as usize].clone()));
-        }
-        ASTNode::Op { left, right, .. } => {
-            if let Some(left_node) = left.as_mut() {
-                substitute_vecs(left_node, sets);
-            }
-            substitute_vecs(right, sets);
-        }
-        _ => {}
+    fn not(self) -> Self::Output {
+		let universe = UNIVERSE.lock().unwrap();
+        MySet(
+            universe.0
+			.iter()
+			.filter_map(|n| if !self.0.contains(n) { Some(*n) } else { None })
+			.collect()
+        )
     }
 }
 
-fn eval_node_vecs(node: ASTNode) -> MySet
-{
-	match node {
-        ASTNode::Set(v) => v,
-        ASTNode::Op { operator, left, right } => {
-            match operator {
-                '&' => eval_node_vecs(*left.unwrap()) & eval_node_vecs(*right),
-                '|' => eval_node_vecs(*left.unwrap()) | eval_node_vecs(*right),
-                '!' => !eval_node_vecs(*right),
-                _ => {
-                    println!("Invalid operator in AST");
-					MySet(vec![])
-                }
+fn build_universe(sets: &Vec<Vec<i32>>) -> MySet {
+    let mut all = Vec::new();
+
+    for s in sets {
+        for x in s {
+            if !all.contains(x) {
+                all.push(*x);
+            }
+        }
+    }
+
+    MySet(all)
+}
+
+fn vec_tree(node: ASTNode<char>, sets: &Vec<Vec<i32>>) -> ASTNode<MySet> {
+    match node {
+        ASTNode::Value(c) => {
+            let idx = (c as u8 - b'A') as usize;
+            ASTNode::Value(MySet(sets[idx].clone()))
+        }
+        ASTNode::Op {
+            operator,
+            left,
+            right,
+        } => {
+            let new_left = left.map(|l| Box::new(vec_tree(*l, sets)));
+            let new_right = Box::new(vec_tree(*right, sets));
+            ASTNode::Op {
+                operator,
+                left: new_left,
+                right: new_right,
+            }
+        }
+    }
+}
+
+fn eval_node_vecs(node: ASTNode<MySet>) -> MySet {
+    match node {
+        ASTNode::Value(v) => v,
+        ASTNode::Op {
+            operator,
+            left,
+            right,
+        } => match operator {
+            '&' => eval_node_vecs(*left.unwrap()) & eval_node_vecs(*right),
+            '|' => eval_node_vecs(*left.unwrap()) | eval_node_vecs(*right),
+            '!' => !eval_node_vecs(*right),
+            _ => {
+                println!("Invalid operator in vec AST");
+                MySet(vec![])
             }
         },
-		_ => {
-			println!("Invalid node in AST");
-			MySet(vec![])
-		}
-	}
+    }
 }
 
 #[allow(non_snake_case)]
-pub fn eval_set(formula: &str, sets: Vec<Vec<i32>>) -> Vec<i32>
-{
-	if formula.contains('1') || formula.contains('0')
+pub fn eval_set(formula: &str, sets: Vec<Vec<i32>>) -> Vec<i32> {
+    if formula.contains('1') || formula.contains('0') {
+        println!("Formula contains constants (0 or 1), cannot convert to NNF");
+        return vec![];
+    }
+    let mut tree = match build_ast(formula) {
+        Some(ast) => ast,
+        None => {
+            println!("Error in formula");
+            return vec![];
+        }
+    };
+
+    let mut modified = true;
+    while modified {
+        modified = false;
+        tree_to_almost_nnf(&mut tree, &mut modified);
+    }
+
+    let tree = vec_tree(tree, &sets);
+
 	{
-		println!("Formula contains constants (0 or 1), cannot convert to NNF");
-		return vec![];
-	}
-	let mut tree = match build_ast(formula) {
-		Some(ast) => ast,
-		None => {
-			println!("Error in formula");
-			return vec![];
-		}
-	};
-
-	let mut modified = true;
-	while modified
-	{
-		modified = false;
-		tree_to_almost_nnf(&mut tree, &mut modified);
-	}
-
-	substitute_vecs(&mut tree, &sets);
-
-	eval_node_vecs(tree).0
+        let mut u = UNIVERSE.lock().unwrap();
+        *u = build_universe(&sets);
+    }
+    eval_node_vecs(tree).0
 }
