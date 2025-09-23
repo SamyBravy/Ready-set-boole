@@ -159,8 +159,13 @@ fn main() {
 		vec![
 			vec![0, 1, 2],
 		],
+		vec![
+			vec![0, 1, 2],
+			vec![3, 4, 5],
+			vec![6, 7, 8],
+		],
 	];
-	let formulas = ["AB&", "AB|", "A!", "1011", "101111111||="];
+	let formulas = ["AB&", "AB|", "A!", "A!", "1011", "101111111||="];
 	for (sets, formulas) in sets_vec.iter().zip(formulas.iter()) {
 		if let Some(ast) = boolean_evaluation::build_ast(formulas) {
 			print!("{} {{", formulas);
