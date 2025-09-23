@@ -6,6 +6,7 @@ mod truth_table;
 mod negation_normal_form;
 mod conjunctive_normal_form;
 mod sat;
+mod powerset;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 	match node {
@@ -132,5 +133,15 @@ fn main() {
 		{
 			sat::sat(expr);
 		}
+	}
+
+	print_section("POWERSET");
+	let sets: Vec<Vec<i32>> = vec![
+		vec![1, 2, 3],
+		vec![],
+		vec![5, 10, 15, 20],
+	];
+	for set in sets {
+		println!("The powerset of {:?} is: {:?}", set, powerset::powerset(set.clone()));
 	}
 }

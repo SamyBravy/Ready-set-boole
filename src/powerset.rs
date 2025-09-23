@@ -1,17 +1,15 @@
-
-
-fn powerset(set: Vec<i32>) -> Vec<Vec<i32>>
+pub fn powerset(set: Vec<i32>) -> Vec<Vec<i32>>
 {
-	let mut powset = Vec::new();
+    let mut powset = Vec::new();
 
-	for i in 0..(1 << set.len())
+    for i in 0..(1 << set.len())
 	{
-		let mut new_set = Vec::new();
+        let subset: Vec<i32> = set.iter()
+            .enumerate()
+            .filter_map(|(j, &val)| if (i >> j) & 1 == 1 { Some(val) } else { None })
+            .collect();
+        powset.push(subset);
+    }
 
-		let mut j = i;
-		while j > 0
-		{
-			
-		}
-	}
+    powset
 }
