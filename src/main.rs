@@ -7,6 +7,7 @@ mod negation_normal_form;
 mod conjunctive_normal_form;
 mod sat;
 mod powerset;
+mod set_evaluation;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 	match node {
@@ -33,6 +34,9 @@ fn display_mathematical_formula(node: &boolean_evaluation::ASTNode) {
 			print!("(");
 			display_mathematical_formula(right);
 			print!(")");
+		},
+		_ => {
+			println!("Invalid node in AST");
 		}
 	}
 }
@@ -144,4 +148,12 @@ fn main() {
 	for set in sets {
 		println!("The powerset of {:?} is: {:?}", set, powerset::powerset(set.clone()));
 	}
+
+	print_section("SET EVALUATION");
+	let sets = vec![
+		vec![0, 1, 2],
+		vec![0, 3, 4],
+	];
+	let result = set_evaluation::eval_set("AB&", sets);
+	println!("The result of the set expression AB& is: {:?}", result);
 }

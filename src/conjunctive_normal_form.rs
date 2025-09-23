@@ -67,6 +67,11 @@ pub fn tree_to_almost_cnf(node: &mut ASTNode, modified: &mut bool)
 #[allow(non_snake_case)]
 pub fn conjunctive_normal_form(formula: &str) -> String
 {
+	if formula.contains('1') || formula.contains('0')
+	{
+		println!("Formula contains constants (0 or 1), cannot convert to CNF");
+		return String::new();
+	}
 	let mut tree = match build_ast(formula) {
 		Some(ast) => ast,
 		None => {

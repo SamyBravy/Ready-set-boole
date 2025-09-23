@@ -1,3 +1,5 @@
+use crate::set_evaluation::MySet;
+
 #[derive(Clone)]
 pub enum ASTNode {
     Value(char),
@@ -6,6 +8,8 @@ pub enum ASTNode {
         left: Option<Box<ASTNode>>,
         right: Box<ASTNode>,
     },
+
+	Set(MySet),
 }
 
 pub fn build_ast(formula: &str) -> Option<ASTNode>
@@ -67,8 +71,12 @@ pub fn eval_node(node: &ASTNode) -> Option<bool>
                     None
                 }
             }
-        }
-    }
+        },
+		_ => {
+			println!("Invalid node in AST");
+			None
+		}
+	}
 }
 
 pub fn eval_formula(formula: &str) -> bool

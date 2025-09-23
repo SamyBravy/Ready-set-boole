@@ -23,7 +23,8 @@ pub fn tree_to_string(node: &ASTNode) -> String
             res.push_str(&operator.to_string());
 
             res
-        }
+        },
+		_ => { String::new() }
 	}
 }
 
@@ -128,6 +129,11 @@ pub fn tree_to_almost_nnf(node: &mut ASTNode, modified: &mut bool)
 #[allow(non_snake_case)]
 pub fn negation_normal_form(formula: &str) -> String
 {
+	if formula.contains('1') || formula.contains('0')
+	{
+		println!("Formula contains constants (0 or 1), cannot convert to NNF");
+		return String::new();
+	}
 	let mut tree = match build_ast(formula) {
 		Some(ast) => ast,
 		None => {

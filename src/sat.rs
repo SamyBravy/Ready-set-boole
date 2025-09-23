@@ -6,6 +6,11 @@ use crate::truth_table::update_dict;
 
 pub fn sat(formula: &str) -> bool
 {
+	if formula.contains('1') || formula.contains('0')
+	{
+		println!("Formula contains constants (0 or 1), cannot perform SAT");
+		return false;
+	}
 	if build_ast(formula).is_none()
 	{
 		println!("Error in formula");
