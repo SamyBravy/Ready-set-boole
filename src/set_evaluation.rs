@@ -1,9 +1,8 @@
 use crate::boolean_evaluation::{build_ast, ASTNode};
 use crate::negation_normal_form::tree_to_almost_nnf;
-
 use std::ops::{BitAnd, BitOr, Not};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct MySet(Vec<i32>);
 
 impl BitAnd for MySet {
