@@ -201,7 +201,7 @@ fn main() {
     }
 
     print_section("CURVE");
-    let points = [(5, 10), (15, 27), (19, 47), (30, 40), (65535, 65535)];
+    let points = [(u16::MIN, u16::MIN), (5, 10), (15, 27), (190, 470), (30000, 40000), (u16::MAX, u16::MAX)];
     for (x, y) in points {
         println!(
             "The Z-order of ({}, {}) {{{:b}, {:b}}} is: {} {{{:b}}}",
