@@ -221,7 +221,7 @@ fn main() {
     }
 
 	print_section("SPACE FILLING CURVE then EMPTYING CURVE");
-	for (x, y) in [(5, 7), (15, 27), (300, 400), (1023, 1023)] {
+	for (x, y) in [(10, 10), (15, 27), (30, 40), (2003, 10300)] {
 		let mapped = space_filling::map(x, y);
 		let (rx, ry) = space_emptying::reverse_map(mapped);
 		println!(

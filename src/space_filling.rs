@@ -1,6 +1,6 @@
 pub fn map(x: u16, y: u16) -> f64 {
     let packed: u64 = morton32(x, y);
-    packed as f64
+    packed as f64 / u32::MAX as f64
 }
 
 
