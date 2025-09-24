@@ -1,9 +1,9 @@
 use crate::boolean_evaluation::{build_ast, ASTNode};
 use crate::negation_normal_form::tree_to_almost_nnf;
+use once_cell::sync::Lazy;
 use std::ops::{BitAnd, BitOr, Not};
 use std::process::exit;
 use std::sync::Mutex;
-use once_cell::sync::Lazy;
 
 #[derive(Clone)]
 pub struct MySet(Vec<i32>);
@@ -45,12 +45,13 @@ impl Not for MySet {
     type Output = Self;
 
     fn not(self) -> Self::Output {
-		let universe = UNIVERSE.lock().unwrap();
+        let universe = UNIVERSE.lock().unwrap();
         MySet(
-            universe.0
-			.iter()
-			.filter_map(|n| if !self.0.contains(n) { Some(*n) } else { None })
-			.collect()
+            universe
+                .0
+                .iter()
+                .filter_map(|n| if !self.0.contains(n) { Some(*n) } else { None })
+                .collect(),
         )
     }
 }
@@ -73,10 +74,10 @@ fn vec_tree(node: ASTNode<char>, sets: &Vec<Vec<i32>>) -> ASTNode<MySet> {
     match node {
         ASTNode::Value(c) => {
             let idx = (c as u8 - b'A') as usize;
-			if idx >= sets.len() {
-				println!("Index out of bounds for sets");
-				exit(1);
-			}
+            if idx >= sets.len() {
+                println!("Index out of bounds for sets");
+                exit(1);
+            }
             ASTNode::Value(MySet(sets[idx].clone()))
         }
         ASTNode::Op {
@@ -136,7 +137,7 @@ pub fn eval_set(formula: &str, sets: Vec<Vec<i32>>) -> Vec<i32> {
 
     let tree = vec_tree(tree, &sets);
 
-	{
+    {
         let mut u = UNIVERSE.lock().unwrap();
         *u = build_universe(&sets);
     }
