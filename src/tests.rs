@@ -9,7 +9,6 @@ mod tests {
     use crate::powerset;
     use crate::sat;
     use crate::set_evaluation;
-    use crate::space_filling;
     use crate::truth_table;
 
     #[test]
@@ -53,12 +52,6 @@ mod tests {
         );
         assert_eq!(powerset::powerset(vec![]), vec![vec![]]);
         assert_eq!(powerset::powerset(vec![5]), vec![vec![], vec![5]]);
-    }
-
-    #[test]
-    fn test_space_filling_map() {
-        assert_eq!(space_filling::map(5, 7), 59.0);
-        assert_eq!(space_filling::map(0, 0), 0.0);
     }
 
     #[test]

@@ -1,16 +1,17 @@
+use std::vec;
+
 mod adder;
 mod boolean_evaluation;
 mod conjunctive_normal_form;
 mod curve;
 mod gray_code;
+mod inverse_function;
 mod multiplier;
 mod negation_normal_form;
 mod powerset;
 mod sat;
 mod set_evaluation;
 mod truth_table;
-mod space_filling;
-mod space_emptying;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode<char>) {
     match node {
@@ -202,35 +203,42 @@ fn main() {
         }
     }
 
-    print_section("SPACE FILLING CURVE (MORTON ORDER)");
-    for (x, y) in [(5, 7), (15, 27), (300, 400), (1023, 1023)] {
+    print_section("CURVE");
+    let points = [
+        (u16::MIN, u16::MIN),
+        (5, 10),
+        (15, 27),
+        (190, 470),
+        (30000, 40000),
+        (u16::MAX, u16::MAX),
+    ];
+    let mut results: Vec<f64> = Vec::new();
+    for (x, y) in points {
+        results.push(curve::map(x, y));
         println!(
-            "The Morton order mapping of ({}, {}) is: {}",
+            "Z-order map: ({}, {}) {{({:b}, {:b})}} is: {} {{{:b}}}",
             x,
             y,
-            space_filling::map(x, y)
-        );
-    }
-    print_section("SPACE EMPTYING CURVE (INVERSE MORTON ORDER)");
-    for (x, y) in [(5, 7), (15, 27), (300, 400), (1023, 1023)] {
-        println!(
-            "The inverse Morton order mapping of ({}, {}) is: {:?}",
             x,
             y,
-            space_emptying::reverse_map(space_filling::map(x, y))
+            results.last().unwrap(),
+            (results.last().unwrap() * (u32::MAX as f64)) as u32
         );
     }
 
-	print_section("SPACE FILLING CURVE then EMPTYING CURVE");
-	for (x, y) in [(10, 10), (15, 27), (30, 40), (2003, 10300)] {
-		let mapped = space_filling::map(x, y);
-		let (rx, ry) = space_emptying::reverse_map(mapped);
-		println!(
-			"Mapping ({}, {}) to {} and back gives: ({}, {})",
-			x, y, mapped, rx, ry
-		);
-	}
-
+    print_section("INVERSE FUNCTION");
+    for n in results {
+        let (x, y) = inverse_function::reverse_map(n);
+        println!(
+            "Inverse Z-order of {} {{{:b}}} is: ({}, {}) {{({:b}, {:b})}}",
+            n,
+            (n * (u32::MAX as f64)) as u32,
+            x,
+            y,
+            x,
+            y
+        );
+    }
 }
 
 #[cfg(test)]
