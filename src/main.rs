@@ -239,6 +239,8 @@ fn main() {
             y
         );
     }
+	print!("Inverse Z-order of an out-of-bounds value: ");
+	inverse_function::reverse_map(1.5);
 }
 
 #[cfg(test)]
