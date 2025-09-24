@@ -9,6 +9,8 @@ mod powerset;
 mod sat;
 mod set_evaluation;
 mod truth_table;
+mod space_filling;
+mod space_emptying;
 
 fn display_mathematical_formula(node: &boolean_evaluation::ASTNode<char>) {
     match node {
@@ -200,17 +202,36 @@ fn main() {
         }
     }
 
-    print_section("CURVE");
-    let points = [(u16::MIN, u16::MIN), (5, 10), (15, 27), (190, 470), (30000, 40000), (u16::MAX, u16::MAX)];
-    for (x, y) in points {
+    print_section("SPACE FILLING CURVE (MORTON ORDER)");
+    for (x, y) in [(5, 7), (15, 27), (300, 400), (1023, 1023)] {
         println!(
-            "The Z-order of ({}, {}) {{{:b}, {:b}}} is: {} {{{:b}}}",
+            "The Morton order mapping of ({}, {}) is: {}",
             x,
             y,
-            x,
-            y,
-            curve::map(x, y),
-            (curve::map(x, y) * (u32::MAX as f64)) as u32
+            space_filling::map(x, y)
         );
     }
+    print_section("SPACE EMPTYING CURVE (INVERSE MORTON ORDER)");
+    for (x, y) in [(5, 7), (15, 27), (300, 400), (1023, 1023)] {
+        println!(
+            "The inverse Morton order mapping of ({}, {}) is: {:?}",
+            x,
+            y,
+            space_emptying::reverse_map(space_filling::map(x, y))
+        );
+    }
+
+	print_section("SPACE FILLING CURVE then EMPTYING CURVE");
+	for (x, y) in [(10, 10), (15, 27), (30, 40), (2003, 10300)] {
+		let mapped = space_filling::map(x, y);
+		let (rx, ry) = space_emptying::reverse_map(mapped);
+		println!(
+			"Mapping ({}, {}) to {} and back gives: ({}, {})",
+			x, y, mapped, rx, ry
+		);
+	}
+
 }
+
+#[cfg(test)]
+mod tests;
